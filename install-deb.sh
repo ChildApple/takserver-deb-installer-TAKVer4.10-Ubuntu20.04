@@ -495,7 +495,7 @@ read HOSTNAME
   echo "What is your email? - Needed for Letsencrypt Alerts"
   read EMAIL
 
-  if certbot certonly --standalone -d $DOMAIN -m $EMAIL --agree-tos --non-interactive; then
+  if certbot certonly --standalone -d $DOMAIN -m $EMAIL --agree-tos --preferred-challenges dns; then
     echo "Certificate obtained successfully!"
     CERT_NAME=$(sudo certbot certificates | grep -oP "(?<=Certificate Name: ).*")
   else
