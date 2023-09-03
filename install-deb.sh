@@ -481,10 +481,27 @@ clear
 
 #FQDN Setup
 read -p "Do you want to setup a FQDN? y or n \n" response
+
 if [[ $response =~ ^[Yy]$ ]]; then
 #install certbot 
 sudo snap install --classic certbot
 sudo ln -s /snap/bin/certbot /usr/bin/certbot
+#Ask if they want to use normal cert generation or if they wasnt to use txt record challenge
+
+echo "Type 1 for normal lets encrypt challenge, type 2 to use txt record challenge default is 1"
+read response
+if [[ $response = 2 ]]; then
+
+  if certbot --manual --preferred-challenges dns certonly; then
+    echo "Certificate obtained successfully!"
+    CERT_NAME=$(sudo certbot certificates | grep -oP "(?<=Certificate Name: ).*")
+  else
+    echo "Error obtaining certificate: $(sudo certbot certificates)"
+    exit 1
+  fi
+
+else
+
 echo "What is your domain name? ex: atakhq.com or tak-public.atakhq.com "
 read FQDN
 DOMAIN=$FQDN
@@ -499,13 +516,14 @@ read HOSTNAME
   echo "What is your email? - Needed for Letsencrypt Alerts"
   read EMAIL
 
-  if certbot --manual --preferred-challenges dns certonly; then
+  if certbot certonly --standalone -d $DOMAIN -m $EMAIL --agree-tos --non-interactive; then
     echo "Certificate obtained successfully!"
     CERT_NAME=$(sudo certbot certificates | grep -oP "(?<=Certificate Name: ).*")
   else
     echo "Error obtaining certificate: $(sudo certbot certificates)"
     exit 1
   fi
+fi
 
 sudo openssl pkcs12 -export -in /etc/letsencrypt/live/$FQDN/fullchain.pem -inkey /etc/letsencrypt/live/$FQDN/privkey.pem -name $HOSTNAME -out ~/$HOSTNAME.p12 -passout pass:atakatak
 # duplicate entry sudo apt install openjdk-17-jre-headless -y
