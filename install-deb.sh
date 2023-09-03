@@ -12,9 +12,9 @@ read -p "Press any key to begin ..."
 # Get the Ubuntu version number
 version=$(lsb_release -rs)
 
-# Check if the version is 20.04
-if [ "$version" != "20.04" ]; then
-  echo "Error: This script requires Ubuntu 20.04"
+# Check if the version is 22.04
+if [ "$version" != "22.04" ]; then
+  echo "Error: This script requires Ubuntu 22.04"
   exit 1
 fi
 
@@ -31,16 +31,18 @@ else
 fi
 
 #import postgres repo
-curl -fSsL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | sudo tee /usr/share/keyrings/postgresql.gpg > /dev/null
-
+sudo mkdir -p /etc/apt/keyrings
+sudo curl https://www.postgresql.org/media/keys/ACCC4CF8.asc --output /etc/apt/keyrings/postgresql.asc
 #import stable build
 #20.04
 echo deb [arch=amd64,arm64,ppc64el signed-by=/usr/share/keyrings/postgresql.gpg] http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main | sudo tee -a /etc/apt/sources.list.d/postgresql.list
 
-sudo apt-get update -y
+sudo sh -c 'echo "deb [signed-by=/etc/apt/keyrings/postgresql.asc] http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/postgresql.list'
+
+sudo apt update -y
 
 #Install Deps
-sudo apt-get install postgresql-client-15 postgresql-15 postgresql-15-postgis-3 unzip zip wget git nano qrencode openssl net-tools dirmngr ca-certificates software-properties-common gnupg gnupg2 apt-transport-https curl openjdk-11-jdk -y
+sudo apt install postgresql-client-15 postgresql-15 postgresql-15-postgis-3 unzip zip wget git nano qrencode openssl net-tools dirmngr ca-certificates software-properties-common gnupg gnupg2 apt-transport-https curl openjdk-17-jdk -y
 
 if [ $? -ne 0 ]; then
 	echo "Error installing dependencies...."
@@ -61,11 +63,13 @@ echo "(Right click > Get Link > Allow Sharing to anyone with link > Open share l
 read FILE_ID
 
 echo "WHAT IS YOUR FILE NAME?"
-echo "(ex: takserver_4.8-RELEASE45_all.deb) - Press Enter to use this as default"
+echo "(ex: takserver_4.10-RELEASE45_all.deb) - Press Enter to use this as default"
 read FILE_NAME
 
+
+
 if [[ -z $FILE_NAME ]]; then
-  FILE_NAME="takserver_4.8-RELEASE45_all.deb"
+  FILE_NAME="takserver_4.10-RELEASE45_all.deb"
 fi
 
 SUCCESS=false
@@ -436,7 +440,7 @@ else
   echo "skipping simple-rtsp-server setup..."
 fi
 
-
+#This is where the actual tak server is installed
 
 #Install the DEB
 RETRY_LIMIT=5
@@ -504,7 +508,7 @@ read HOSTNAME
   fi
 
 sudo openssl pkcs12 -export -in /etc/letsencrypt/live/$FQDN/fullchain.pem -inkey /etc/letsencrypt/live/$FQDN/privkey.pem -name $HOSTNAME -out ~/$HOSTNAME.p12 -passout pass:atakatak
-sudo apt install openjdk-16-jre-headless -y
+# duplicate entry sudo apt install openjdk-17-jre-headless -y
 echo ""
 read -p "If asked to save file becuase an existing copy exists, reply Y. Press any key to resume setup..."
 echo ""
