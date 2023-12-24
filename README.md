@@ -15,7 +15,7 @@
 - Login as root user to your install target machine
 - Download and Run the install script with the command below
 
-```cd /tmp/ && git clone https://github.com/ChildApple/takserver-deb-installer-TAKVer4.10-Ubuntu20.04.git && sudo mv https://github.com/ChildApple/takserver-deb-installer-TAKVer4.10-Ubuntu20.04.git && cd ./takserver-deb-installer && sudo chmod +x install-deb.sh && sudo ./install-deb.sh```
+```cd /tmp/ && git clone https://github.com/ChildApple/takserver-deb-installer-TAKVer4.10-Ubuntu20.04.git &&  cd takserver-deb-installer-TAKVer4.10-Ubuntu20.04 && sudo chmod +x install-deb.sh && sudo ./install-deb.sh```
 
 
 ## What the script does:
