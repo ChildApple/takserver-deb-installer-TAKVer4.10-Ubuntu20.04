@@ -446,7 +446,7 @@ fi
 RETRY_LIMIT=5
 
 for ((i=1;i<=RETRY_LIMIT;i++)); do
-    sudo apt install /tmp/takserver-deb-installer/$FILE_NAME -y && break
+    sudo apt install /tmp/takserver-deb-installer-TAKVer4.10-Ubuntu20.04/$FILE_NAME -y && break
     echo "Retry $i: Failed to install the package. Retrying in 5 seconds..."
     sleep 5
 done
